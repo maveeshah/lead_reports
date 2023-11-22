@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include lead_reports *.css
+recursive-include lead_reports *.csv
+recursive-include lead_reports *.html
+recursive-include lead_reports *.ico
+recursive-include lead_reports *.js
+recursive-include lead_reports *.json
+recursive-include lead_reports *.md
+recursive-include lead_reports *.png
+recursive-include lead_reports *.py
+recursive-include lead_reports *.svg
+recursive-include lead_reports *.txt
+recursive-exclude lead_reports *.pyc
