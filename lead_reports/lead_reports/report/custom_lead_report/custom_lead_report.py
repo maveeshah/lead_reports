@@ -29,7 +29,7 @@ def execute(filters=None):
         data.append({
             "name": lead.name,
             "creation_date": lead.creation_date,
-            "lead_name": lead.lead_name,  # Assuming 'status' is the lead name, adjust as needed
+            "lead_name": lead.lead_name, 
             "email_id": lead.email_id,
             "mobile_no": lead.mobile_no,
             "source": lead.source,
