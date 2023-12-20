@@ -31,4 +31,20 @@ frappe.query_reports["Custom Lead Report"] = {
       default: frappe.datetime.get_today(),
     },
   ],
+  onload: function () {
+    frappe.query_report._get_filters_html_for_print = frappe.query_report.get_filters_html_for_print;
+    frappe.query_report.get_filters_html_for_print = print_settings => {
+      const me = frappe.query_report,
+        encode = svg => 'data:image/svg+xml;base64,' + btoa((new XMLSerializer()).serializeToString(svg));
+      let applied_filters = me._get_filters_html_for_print();
+
+      if (me.chart && me.chart.svg) {
+        applied_filters += `<hr><img alt="${__('Chart')}" src="${encode(me.chart.svg)}" />`;
+      }
+
+      return applied_filters;
+
+    };
+
+  }
 };
