@@ -3,7 +3,7 @@
 
 import frappe
 from frappe import _
-
+import json
 
 def execute(filters=None):
     columns = get_columns()
@@ -22,10 +22,20 @@ def execute(filters=None):
                                 filters=filters_for_leads,
                                 fields=["name", "lead_name","status", "email_id", "mobile_no",
                                         "custom_lead_update", "source",
-                                        "date(creation) as creation_date", "lead_owner"])
-
+                                        "date(creation) as creation_date", "lead_owner","_assign as assignees"])
     # Prepare data for report
     for lead in leads_data:
+        if lead.assignees:
+            assignees = json.loads(lead.assignees)
+            # loop over assignees and fetch their first name + last name
+            if assignees:
+            # lead.assignees = ", ".join([frappe.db.get_value("User", user, "first_name") + " " + frappe.db.get_value("User", user, "last_name") for user in assignees])
+                lead.assignees = ", ".join([
+                    (frappe.db.get_value("User", user, "first_name") or "") + " " + 
+                    (frappe.db.get_value("User", user, "last_name") or "")
+                    for user in assignees
+                ])
+
         data.append({
             "name": lead.name,
             "creation_date": lead.creation_date,
@@ -35,7 +45,8 @@ def execute(filters=None):
             "source": lead.source,
             "status": lead.status,
             "custom_lead_update": lead.custom_lead_update,
-            "lead_owner": lead.lead_owner
+            "lead_owner": lead.lead_owner,
+            "assignees": lead.assignees
         })
 
     # Generate chart data
@@ -49,7 +60,8 @@ def get_columns():
         {
             "label": _("ID"),
             "fieldname": "name",
-            "fieldtype": "Data",
+            "fieldtype": "Link",
+            "options": "Lead",
             "width": 200
         },
         {
@@ -99,7 +111,14 @@ def get_columns():
             "fieldname": "lead_owner",
             "fieldtype": "Data",
             "width": 200
-        },]
+        },
+        {
+            "label": _("Assignee"),
+            "fieldname": "assignees",
+            "fieldtype": "Data",
+            "width": 200
+        },
+        ]
 
 
 def get_chart_data(leads_data, filters, filters_for_leads):
